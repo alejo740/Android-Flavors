@@ -1,7 +1,8 @@
-package com.sample.demoflavors
+package com.sample.demoflavors.home.view
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import com.sample.demoflavors.R
 
 class MainActivity : AppCompatActivity() {
 
