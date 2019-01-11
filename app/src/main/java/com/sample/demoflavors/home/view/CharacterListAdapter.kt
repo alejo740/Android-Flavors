@@ -6,6 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.bumptech.glide.Glide
+import com.bumptech.glide.Priority
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.RequestOptions
 import com.sample.demoflavors.R
 import com.sample.demoflavors.api.models.CharacterModel
 import kotlinx.android.synthetic.main.grid_character_item.view.*
@@ -49,6 +52,11 @@ class CharacterListAdapter(val clickListener: (CharacterModel) -> Unit) :
         private var title = view.title_text
         private var image = view.image_view
 
+        val options = RequestOptions()
+            .priority(Priority.HIGH)
+            .placeholder(R.drawable.ic_placeholder)
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
+
         fun bind(character: CharacterModel, clickListener: (CharacterModel) -> Unit) {
 
             title?.let { it.text = character.title}
@@ -56,6 +64,7 @@ class CharacterListAdapter(val clickListener: (CharacterModel) -> Unit) :
             image?.let {
                 Glide.with(image.context)
                     .load(character.photoUrl)
+                    .apply(options)
                     .into(image)
             }
 
