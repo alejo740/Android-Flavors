@@ -2,6 +2,8 @@ apply plugin: 'com.android.application'
 
 apply plugin: 'kotlin-android'
 
+apply plugin: 'kotlinx-serialization'
+
 apply plugin: 'kotlin-kapt'
 
 apply plugin: 'kotlin-android-extensions'
@@ -15,6 +17,8 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "BASE_URL", "\"https://api.duckduckgo.com\"")
     }
     buildTypes {
         release {
@@ -30,12 +34,14 @@ android {
             applicationIdSuffix ".simpsonsviewer"
             versionName '1'
             versionNameSuffix '1.0'
+            buildConfigField("String", "CHARACTERS_QUERY", "\"simpsons characters\"")
         }
         wireViewer {
             dimension "dimension1"
             applicationIdSuffix ".wireviewer"
             versionName '1'
             versionNameSuffix '1.0'
+            buildConfigField("String", "CHARACTERS_QUERY", "\"the wire characters\"")
         }
     }
 }
@@ -51,6 +57,7 @@ ext {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.9.1"
 
     implementation "com.android.support:appcompat-v7:$supportLibraryVersion"
     implementation "com.android.support:recyclerview-v7:$supportLibraryVersion"
