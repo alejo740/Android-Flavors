@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Demo Flavors</string>
+    <string name="toggle_view">Toggle View</string>
 </resources>
