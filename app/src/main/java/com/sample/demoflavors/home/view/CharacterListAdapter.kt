@@ -14,14 +14,19 @@ import com.sample.demoflavors.api.models.CharacterModel
 import kotlinx.android.synthetic.main.grid_character_item.view.*
 import kotlinx.android.synthetic.main.linear_character_item.view.*
 
-class CharacterListAdapter(val clickListener: (CharacterModel) -> Unit) :
+class CharacterListAdapter(val clickListener: (CharacterModel, View) -> Unit) :
     RecyclerView.Adapter<CharacterListAdapter.CharacterViewHolder>() {
+
+    companion object {
+        val imageOptions = RequestOptions()
+            .placeholder(R.drawable.ic_placeholder)
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
+    }
 
     var items: ArrayList<CharacterModel> = ArrayList()
     var linearView: Boolean = true
 
     override fun onCreateViewHolder(p0: ViewGroup, p1: Int): CharacterViewHolder {
-        Log.i("FLAV", "CREATE...")
         val layoutId = if(linearView) R.layout.linear_character_item else R.layout.grid_character_item
         val layout = LayoutInflater.from(p0.context).inflate(layoutId, p0, false)
         return CharacterViewHolder(layout)
@@ -41,6 +46,11 @@ class CharacterListAdapter(val clickListener: (CharacterModel) -> Unit) :
         notifyItemInserted(items.size - 1)
     }
 
+    fun clearItems() {
+        items.clear()
+        notifyDataSetChanged()
+    }
+
     fun setCharacters(characters: List<CharacterModel>) {
         items.clear()
         items.addAll(characters)
@@ -52,24 +62,19 @@ class CharacterListAdapter(val clickListener: (CharacterModel) -> Unit) :
         private var title = view.title_text
         private var image = view.image_view
 
-        val options = RequestOptions()
-            .priority(Priority.HIGH)
-            .placeholder(R.drawable.ic_placeholder)
-            .diskCacheStrategy(DiskCacheStrategy.ALL)
-
-        fun bind(character: CharacterModel, clickListener: (CharacterModel) -> Unit) {
+        fun bind(character: CharacterModel, clickListener: (CharacterModel, View) -> Unit) {
 
             title?.let { it.text = character.title}
 
             image?.let {
                 Glide.with(image.context)
                     .load(character.photoUrl)
-                    .apply(options)
+                    .apply(imageOptions)
                     .into(image)
             }
 
             view.setOnClickListener {
-                clickListener(character)
+                clickListener(character, view)
             }
         }
     }

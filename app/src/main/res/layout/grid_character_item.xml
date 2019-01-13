@@ -17,6 +17,7 @@
 
         <ImageView
                 android:id="@+id/image_view"
+                android:transitionName="@string/image_transition_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:scaleType="fitCenter"/>

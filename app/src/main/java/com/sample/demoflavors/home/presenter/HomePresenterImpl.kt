@@ -34,7 +34,7 @@ class HomePresenterImpl(private val interactor: HomeInteractor) : HomePresenter 
     }
 
     override fun rxUnsubscribe() {
-        subscription!!.let {
+        subscription?.let {
             if(it.isDisposed)
                 it.dispose()
         }

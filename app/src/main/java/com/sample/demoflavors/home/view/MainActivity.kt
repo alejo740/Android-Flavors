@@ -1,19 +1,26 @@
 package com.sample.demoflavors.home.view
 
+import android.app.ActivityOptions
+import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
+import android.transition.Explode
+import android.view.*
 import com.sample.demoflavors.R
 import com.sample.demoflavors.api.models.CharacterModel
 import com.sample.demoflavors.app.App
+import com.sample.demoflavors.detail.view.ARG_CHARACTER
+import com.sample.demoflavors.detail.view.DetailActivity
+import com.sample.demoflavors.detail.view.DetailFragment
 import com.sample.demoflavors.home.presenter.HomePresenter
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.fragment_detail.view.*
 import javax.inject.Inject
+
 
 class MainActivity : AppCompatActivity(), HomeView {
 
@@ -26,22 +33,30 @@ class MainActivity : AppCompatActivity(), HomeView {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        with(window) {
+            requestFeature(Window.FEATURE_CONTENT_TRANSITIONS)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                exitTransition = Explode()
+                exitTransition.duration = 800
+            }
+        }
+
         setContentView(R.layout.activity_main)
+
         (application as App).component!!.let { it.inject(this) }
         setupList()
+
+        presenter.setView(this)
+        presenter.loadData()
     }
 
     private fun setupList() {
         item_list.layoutManager = gridLayout
         item_list.setHasFixedSize(true)
-        adapterCharacterList = CharacterListAdapter { characterModel -> openCharacterDetail(characterModel) }
+        adapterCharacterList =
+                CharacterListAdapter { characterModel, view -> openCharacterDetail(characterModel, view) }
         item_list.adapter = adapterCharacterList
-    }
-
-    override fun onStart() {
-        super.onStart()
-        presenter.setView(this)
-        presenter.loadData()
     }
 
     override fun onPause() {
@@ -68,10 +83,10 @@ class MainActivity : AppCompatActivity(), HomeView {
 
     private fun toggleView() {
         val scrollPos = (item_list.layoutManager as LinearLayoutManager).findFirstCompletelyVisibleItemPosition()
-        if(gridLayout.spanCount == 1) {
+        if (gridLayout.spanCount == 1) {
             adapterCharacterList.linearView = false
             gridLayout.spanCount = 2
-        }else{
+        } else {
             adapterCharacterList.linearView = true
             gridLayout.spanCount = 1
         }
@@ -79,8 +94,38 @@ class MainActivity : AppCompatActivity(), HomeView {
         item_list.scrollToPosition(scrollPos)
     }
 
-    private fun openCharacterDetail(characterModel: CharacterModel) {
+    private fun openCharacterDetail(
+        characterModel: CharacterModel,
+        view: View
+    ) {
+        if (detail_container == null) {
+            val intent = Intent(this, DetailActivity::class.java).apply {
+                putExtra(ARG_CHARACTER, characterModel)
+            }
 
+
+            if (gridLayout.spanCount == 2) {
+                var options: ActivityOptions? = null
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    options = ActivityOptions.makeSceneTransitionAnimation(
+                        this,
+                        view.image_view,
+                        getString(R.string.image_transition_name)
+                    )
+                }
+                startActivity(intent, options?.toBundle())
+            }else{
+                startActivity(intent)
+                overridePendingTransition(R.anim.right_in, R.anim.left_out)
+            }
+
+
+        } else {
+            val fragment = DetailFragment.newInstance(characterModel, false)
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.detail_container, fragment)
+                .commit()
+        }
     }
 
     override fun updateCharacterList(characterModel: CharacterModel) {
