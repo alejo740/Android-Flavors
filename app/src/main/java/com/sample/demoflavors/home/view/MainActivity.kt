@@ -123,6 +123,7 @@ class MainActivity : AppCompatActivity(), HomeView {
         } else {
             val fragment = DetailFragment.newInstance(characterModel, false)
             supportFragmentManager.beginTransaction()
+                .setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
                 .replace(R.id.detail_container, fragment)
                 .commit()
         }
