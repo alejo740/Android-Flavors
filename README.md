@@ -7,7 +7,7 @@ This is a demo of using Flavors in order to generate two versions of the app wit
   - RxJava
   - Retrofit
   - OkHttp
-  - Glade
+  - Glide
   - Kotlin
   
 ## Phones
